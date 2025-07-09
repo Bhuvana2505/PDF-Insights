@@ -1,6 +1,4 @@
 import type {NextConfig} from 'next';
-import CopyPlugin from "copy-webpack-plugin";
-import path from "path";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -18,25 +16,14 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdnjs.cloudflare.com',
+      }
     ],
   },
   webpack: (config) => {
     config.resolve.alias.canvas = false;
-
-    config.plugins.push(
-      new CopyPlugin({
-        patterns: [
-          {
-            from: path.join(
-              __dirname,
-              "node_modules/pdfjs-dist/build/pdf.worker.min.mjs"
-            ),
-            to: path.join(__dirname, "public"),
-          },
-        ],
-      })
-    );
-
     return config;
   },
 };

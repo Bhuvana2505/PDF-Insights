@@ -17,7 +17,7 @@ type ChatMessageType = {
   content: ReactNode;
 };
 
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
