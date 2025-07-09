@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PDF Insights Chat",
+  title: "PDF Insights",
   description: "Chat with your PDF documents using AI",
 };
 

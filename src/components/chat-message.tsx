@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 interface ChatMessageProps {
   role: "user" | "assistant";
@@ -13,7 +14,10 @@ interface ChatMessageProps {
 export function ChatMessage({ role, content }: ChatMessageProps) {
   const isUser = role === "user";
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
       className={cn(
         "flex items-start gap-4 py-4",
         isUser ? "justify-end" : ""
@@ -28,10 +32,10 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
       )}
       <div
         className={cn(
-          "max-w-2xl rounded-lg px-4 py-3 shadow-sm",
+          "max-w-2xl rounded-xl px-5 py-3 shadow-md",
           isUser
             ? "bg-primary text-primary-foreground"
-            : "bg-card"
+            : "bg-card border"
         )}
       >
         {typeof content === "string" ? (
@@ -47,6 +51,6 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
           </AvatarFallback>
         </Avatar>
       )}
-    </div>
+    </motion.div>
   );
 }
