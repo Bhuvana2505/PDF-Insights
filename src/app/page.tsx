@@ -29,15 +29,15 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="absolute top-4 right-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() =>
-            window.open("https://github.com/firebase/genkit", "_blank")
-          }
-        >
-          <Github className="h-6 w-6" />
-          <span className="sr-only">GitHub</span>
+        <Button variant="ghost" size="icon" asChild>
+          <a
+            href="https://github.com/firebase/genkit"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Github className="h-6 w-6" />
+            <span className="sr-only">GitHub</span>
+          </a>
         </Button>
       </div>
       <Card className="w-full max-w-md shadow-2xl">
