@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent, type ReactNode } from "react";
+import * as pdfjs from "pdfjs-dist";
 import { generateAnswer } from "@/ai/flows/generate-answer";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -16,8 +17,11 @@ type ChatMessageType = {
   content: ReactNode;
 };
 
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
+  const [pdfTexts, setPdfTexts] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAnswering, setIsAnswering] = useState(false);
   const [docsProcessed, setDocsProcessed] = useState(false);
@@ -35,6 +39,19 @@ export default function Home() {
     }
   }, [chatHistory]);
 
+  const extractTextFromPdf = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+    let fullText = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items.map(item => 'str' in item ? item.str : '').join(" ");
+      fullText += pageText + "\n\n";
+    }
+    return `[Content of file: ${file.name}]\n${fullText}`;
+  };
+
   const handleProcess = async () => {
     if (files.length === 0) {
       toast({
@@ -47,18 +64,28 @@ export default function Home() {
 
     setIsProcessing(true);
     setDocsProcessed(false);
-    setChatHistory([]); 
-    
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setDocsProcessed(true);
-    setIsProcessing(false);
-    setChatHistory([{ role: 'assistant', content: `I've processed your document${files.length > 1 ? 's' : ''}. What would you like to know?` }]);
+    setChatHistory([]);
+    setPdfTexts([]);
 
-    toast({
-      title: "Processing Complete",
-      description: `Your document${files.length > 1 ? 's' : ''} are ready. You can now ask questions.`,
-    });
+    try {
+        const extractedTexts = await Promise.all(files.map(extractTextFromPdf));
+        setPdfTexts(extractedTexts);
+        setDocsProcessed(true);
+        setChatHistory([{ role: 'assistant', content: `I've processed your document${files.length > 1 ? 's' : ''}. What would you like to know?` }]);
+        toast({
+          title: "Processing Complete",
+          description: `Your document${files.length > 1 ? 's' : ''} are ready. You can now ask questions.`,
+        });
+    } catch(error) {
+        console.error("Error processing PDFs:", error);
+        toast({
+            title: "Error processing PDFs",
+            description: "There was an issue reading the PDF files. Please ensure they are valid PDFs and try again.",
+            variant: "destructive",
+        });
+    } finally {
+        setIsProcessing(false);
+    }
   };
 
   const handleQuestionSubmit = async (e: FormEvent) => {
@@ -72,8 +99,6 @@ export default function Home() {
     setIsAnswering(true);
 
     try {
-      const pdfTexts = files.map(file => `[Content of file: ${file.name}]`);
-
       const response = await generateAnswer({
         question: currentQuestion,
         pdfTexts: pdfTexts,
@@ -103,7 +128,15 @@ export default function Home() {
           </SidebarHeader>
           <SidebarContent className="p-4 pt-0">
             <p className="text-sm font-medium text-muted-foreground mb-4">Upload your documents</p>
-            <PdfUploader onFilesChange={setFiles} disabled={isProcessing} />
+            <PdfUploader 
+              onFilesChange={(newFiles) => {
+                setFiles(newFiles);
+                setDocsProcessed(false);
+                setChatHistory([]);
+                setPdfTexts([]);
+              }} 
+              disabled={isProcessing} 
+            />
           </SidebarContent>
           <SidebarFooter className="p-4">
             <Button onClick={handleProcess} disabled={isProcessing || files.length === 0} className="w-full">
