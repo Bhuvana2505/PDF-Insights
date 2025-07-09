@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, Loader2, Send } from "lucide-react";
+import { Bot, Loader2, Send, FileText } from "lucide-react";
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { PdfUploader } from "@/components/pdf-uploader";
 import { ChatMessage } from "@/components/chat-message";
@@ -124,10 +124,10 @@ export default function Home() {
       <div className="flex min-h-screen bg-background text-foreground">
         <Sidebar side="left" collapsible="icon" variant="sidebar" className="border-r border-border/50">
           <SidebarHeader className="p-4">
-            <h2 className="font-headline text-2xl font-semibold text-primary">PDF Insights Chat</h2>
+            <h2 className="font-headline text-xl font-semibold">Your documents</h2>
           </SidebarHeader>
           <SidebarContent className="p-4 pt-0">
-            <p className="text-sm font-medium text-muted-foreground mb-4">Upload your documents</p>
+            <p className="text-sm font-medium text-muted-foreground mb-4">Upload your PDFs here and click on 'Process'</p>
             <PdfUploader 
               onFilesChange={(newFiles) => {
                 setFiles(newFiles);
@@ -149,7 +149,14 @@ export default function Home() {
         <SidebarInset>
           <div className="flex flex-col h-screen">
             <header className="flex items-center justify-between border-b p-4 bg-card/50">
-              <h1 className="font-headline text-2xl font-bold">Ask Questions</h1>
+              <div className="flex items-center gap-3">
+                <h1 className="font-headline text-2xl font-bold">Chat with multiple PDFs</h1>
+                <span className="flex -space-x-2" aria-hidden="true">
+                    <span className="h-5 w-5 rounded-sm bg-chart-1/80"></span>
+                    <span className="h-5 w-5 rounded-sm bg-chart-2/80"></span>
+                    <span className="h-5 w-5 rounded-sm bg-chart-3/80"></span>
+                </span>
+              </div>
               <SidebarTrigger />
             </header>
             
@@ -159,9 +166,9 @@ export default function Home() {
                         {chatHistory.length === 0 ? (
                              <div className="flex flex-col items-center justify-center h-[calc(100vh-14rem)] text-center">
                                 <div className="p-5 bg-card rounded-full mb-4 border">
-                                    <Bot size={40} className="text-primary"/>
+                                    <FileText size={40} className="text-primary"/>
                                 </div>
-                                <h2 className="text-2xl font-headline font-semibold">Welcome to PDF Insights Chat</h2>
+                                <h2 className="text-2xl font-headline font-semibold">Ready for your documents</h2>
                                 <p className="text-muted-foreground mt-2 max-w-md">
                                     Upload your PDF documents in the sidebar, click "Process," and then ask me anything about their content.
                                 </p>
