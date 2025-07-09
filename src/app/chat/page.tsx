@@ -1,13 +1,23 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import * as pdfjs from "pdfjs-dist";
 import { generateAnswer } from "@/ai/flows/generate-answer";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, Loader2, Send, FileText } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Bot, Loader2, Send, FileText, User, LogOut, Settings } from "lucide-react";
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { PdfUploader } from "@/components/pdf-uploader";
 import { ChatMessage } from "@/components/chat-message";
@@ -29,6 +39,7 @@ export default function ChatPage() {
   const [userInput, setUserInput] = useState("");
   const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -157,7 +168,40 @@ export default function ChatPage() {
                     <span className="h-5 w-5 rounded-sm bg-chart-3/80"></span>
                 </span>
               </div>
-              <SidebarTrigger />
+              <div className="flex items-center gap-2">
+                <SidebarTrigger />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                      <Avatar className="h-10 w-10 border">
+                        <AvatarFallback className="bg-card">
+                          <User className="h-5 w-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">PDF User</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          user@example.com
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => router.push('/')}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </header>
             
             <main className="flex-1 overflow-hidden">
