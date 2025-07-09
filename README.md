@@ -1,5 +1,6 @@
-# Firebase Studio
+# PDF AI
 
-This is a NextJS starter in Firebase Studio.
+This is a NextJS application built with Firebase.
 
 To get started, take a look at src/app/page.tsx.
+# PDF-Insights
